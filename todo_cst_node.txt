@@ -1,0 +1,23 @@
+todo_cst_node.txt
+
+todo list
+
+CST, started 11 Nov 2018
+
+----
+
+
+already done;
+--	set up git repo
+--	npm init'ed
+--	pm2'ing from project folder (except with -g(lobal?)
+
+
+doing;
+--	deciding on express or continuing with http and https
+--	considering react / angular
+
+
+----
+
+
