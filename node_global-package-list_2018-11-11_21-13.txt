@@ -1,0 +1,4 @@
+/home/webman/.nvm/versions/node/v10.13.0/lib
+├── npm@6.4.1
+└── pm2@3.2.2
+
