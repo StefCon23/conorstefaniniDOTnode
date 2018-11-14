@@ -17,12 +17,13 @@ const port = 2323;
 
 /*	packages
 */
+//	handle requests in general
+//		there's a https version too if it gets to that point
 const http = require('http');
-//const https = require('https');
-const fetch = require("node-fetch");
-//	fetch wasn't great
+//	to GET stuff
 var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
-
+//	jquery functions on node, better than regex for the moment
+var cheerio = require('cheerio');
 
 
 
@@ -30,58 +31,8 @@ var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 /*	functions
 */
 
-/*	get URL, get a url
-**		like a twitter page, rss feed, whatever
-*/
-var getURL = async function (url, callback) {
-console.log("starting up the getURL function on; " + url);
-//.then(res => res.json())	//	make data json ?
-	const data = await(fetch(url))
-		.then((out) => {
-console.log("output is; " + JSON.stringify(out));
-console.log("");
-console.log("~~~~~~~~~~~~~~~~~~~~");
-console.log("output again is; " + JSON.stringify(out));
-				//console.log(out.timestamp.slice(11)));
-				//for (var i = 0; i < out.numberofresults; ++i) {
-					//rtpiHtml += out.results[i].route;
-					//rtpiHtml += out.results[i].destination.toUpperCase();
-					//rtpiHtml += hrsMinsMinus(out.results[i].arrivaldatetime, out.timestamp);
-/*
-(async () => {
-  const rawResponse = await fetch('https://httpbin.org/post', {
-    method: 'POST',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({a: 1, b: 'Textual content'})
-  });
-  const content = await rawResponse.json();
-
-  console.log(content);
-})();
-*/
-
-
-console.log(out);
-console.log(responseText.out);
-
-			//	ain't no
-			callback(out);
-
-			return out;
-		})
-		.catch(err => {throw err});
-	
-	if (data == null) {
-		return;
-	}
-}
-
-
-
-function getHTTP(url, callback) {
+//	getURL, to get a url, using xmlhttprequest
+function getURL(url, callback) {
 	var request = new XMLHttpRequest();
 	request.open("GET", url, false);
 	request.onreadystatechange = function() {
@@ -120,9 +71,14 @@ console.log('btw, you might get in an infinite (recursive) loop');
 	callback(request.responseText);
 }
 
-//htmolestATweet(rawTwatShite) {
+function htmolestATweet(rawTwatShite) {
 	//	this is your actual disgusting regex html madness
-//}
+	//	no wait, jquery / cheerio for dom manipulation
+	console.log("htmolesting in action on; " + rawTwatShite);
+	$ = cheerio.load(rawTwatShite);
+	//	here's the interesting bit
+	textContent = $('h1').text();
+}
 
 
 /*	actual server,      ENTRY POINT ------------------------------------
@@ -142,45 +98,34 @@ const server = http.createServer((req, res) => {
 		res.end('CONOR STEFANINI .NODE\n');
 	} else {
 		//	a different request supplied via url
-//console.log("sbstr -3; " + req.url.substr(-3));
-//console.log("sbstr +3; " + req.url.substr(+3));
-//console.log("sbstr 0; " + req.url.substr(0));
-//console.log("sbstr len; " + req.url.substr(req.url.length));
-		//	use a ? delimeter and a usr=xxxxx status=xxxxx format
-
-		//var proto = req.url.substr(1);
-/*
-		switch (req.url) {
-			//	twitter
-			case "/tw" :
-				console.log
-				break;
-			default :
-				console.log
-				break;
-		}
-*/
-
 
 		//	bit of a durty way to strip strings
 		//		-5 would give last 5 chars, -1 gives last 1 char
 		//	taking the first char slash of the request name anyway
-		var spurl = req.url.substr(1);
-		console.log(spurl);
-		if (spurl.charAt(0) != 'h') {	//	genius url error checking
-			spurl = "http://" + spurl;	//	probably need https
+		var url = req.url.substr(1);
+console.log(url);
+		if (url.charAt(0) != 'h') {	//	genius url error checking
+			url = "https://" + url;	//	probably need https
 		}
 
 		//	works beautiful, commented out for testing of string munge
-		getHTTP(spurl, function(out){
+		getURL(url, function(out){
 			console.log("doing the get url callback now");
-			res.end("finishing that callback; \n" + out + '\n; (that was it)\n');
+			//	todo; find out how res end does it's do, maybe send a 
+			//		full packaged html
+			//res.end("finishing that callback; \n" + out + "\n; (that was it)\n");
+			var final = "finishing that callback; \n" + out + "\n; (that was it)\n";
+
+			//	new tweet handler
+			var donald = htmolestATweet(out);
+			final += "after a munge; \n" + donald + "\n and that's the end of that";
+
+			//	send output to the screen
+			res.end(final);
 			console.log("donezo");
-			});
+		});
 
 	}
-		//res.end( + '\n');
-//console.log("printing result anyway; " + res);
 });
 //	actual entry point
 server.listen(port, hostname, () => {
