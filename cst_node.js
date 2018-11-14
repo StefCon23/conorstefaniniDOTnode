@@ -10,11 +10,13 @@
 **	-	redirect http to https
 */
 
-//	host and port will be mapped by apache
+/*	host and port will be mapped further by apache
+*/
 const hostname = '127.4.2.0';
 const port = 2323;
 
-//	packages
+/*	packages
+*/
 const http = require('http');
 //const https = require('https');
 const fetch = require("node-fetch");
@@ -25,6 +27,8 @@ var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
 
 
+/*	functions
+*/
 
 /*	get URL, get a url
 **		like a twitter page, rss feed, whatever
@@ -121,11 +125,11 @@ console.log('btw, you might get in an infinite (recursive) loop');
 //}
 
 
-/*	actual SERVER	----------------------------------------------------
+/*	actual server,      ENTRY POINT ------------------------------------
 */
 const server = http.createServer((req, res) => {
 	//	print request url
-	console.log(Date.now());
+	console.log(Date.now().toString());
 	console.log("request is; " + req.url);
 	//	going to be dicking with url's soon
 
@@ -138,11 +142,25 @@ const server = http.createServer((req, res) => {
 		res.end('CONOR STEFANINI .NODE\n');
 	} else {
 		//	a different request supplied via url
-console.log("sbstr -3; " + req.url.substr(-3));
-console.log("sbstr +3; " + req.url.substr(+3));
-console.log("sbstr 0; " + req.url.substr(0));
-console.log("sbstr len; " + req.url.substr(req.url.length));
+//console.log("sbstr -3; " + req.url.substr(-3));
+//console.log("sbstr +3; " + req.url.substr(+3));
+//console.log("sbstr 0; " + req.url.substr(0));
+//console.log("sbstr len; " + req.url.substr(req.url.length));
 		//	use a ? delimeter and a usr=xxxxx status=xxxxx format
+
+		//var proto = req.url.substr(1);
+/*
+		switch (req.url) {
+			//	twitter
+			case "/tw" :
+				console.log
+				break;
+			default :
+				console.log
+				break;
+		}
+*/
+
 
 		//	bit of a durty way to strip strings
 		//		-5 would give last 5 chars, -1 gives last 1 char
@@ -150,21 +168,21 @@ console.log("sbstr len; " + req.url.substr(req.url.length));
 		var spurl = req.url.substr(1);
 		console.log(spurl);
 		if (spurl.charAt(0) != 'h') {	//	genius url error checking
-			spurl = 'http://' + spurl;	//	probably need https
+			spurl = "http://" + spurl;	//	probably need https
 		}
 
 		//	works beautiful, commented out for testing of string munge
-/*		getHTTP(spurl, function(out){
+		getHTTP(spurl, function(out){
 			console.log("doing the get url callback now");
-			res.end("finishing that callback; " + JSON.stringify(out) + '; (that was it)\n');
+			res.end("finishing that callback; \n" + out + '\n; (that was it)\n');
 			console.log("donezo");
 			});
-*/
+
 	}
 		//res.end( + '\n');
 //console.log("printing result anyway; " + res);
 });
-
+//	actual entry point
 server.listen(port, hostname, () => {
   console.log(`CONOR STEFANINI NODE running at http://${hostname}:${port}/`);
 });
